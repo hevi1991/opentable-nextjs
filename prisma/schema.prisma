@@ -33,22 +33,23 @@ model Restaurant {
   items       Item[]
   create_at   DateTime @default(now())
   update_at   DateTime @updatedAt
+  reviews     Review[]
 }
 
 model Location {
-  id         Int          @id @default(autoincrement())
-  name       String
-  Restaurant Restaurant[]
-  create_at  DateTime     @default(now())
-  update_at  DateTime     @updatedAt
+  id          Int          @id @default(autoincrement())
+  name        String
+  restaurants Restaurant[]
+  create_at   DateTime     @default(now())
+  update_at   DateTime     @updatedAt
 }
 
 model Cuisine {
-  id         Int          @id @default(autoincrement())
-  name       String
-  Restaurant Restaurant[]
-  create_at  DateTime     @default(now())
-  update_at  DateTime     @updatedAt
+  id          Int          @id @default(autoincrement())
+  name        String
+  restaurants Restaurant[]
+  create_at   DateTime     @default(now())
+  update_at   DateTime     @updatedAt
 }
 
 model Item {
@@ -66,4 +67,31 @@ enum PRICE {
   CHEAP
   REGULAR
   EXPENSIVE
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  first_name String
+  last_name  String
+  city       String
+  email      String
+  password   String
+  phone      String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  reviews    Review[]
+}
+
+model Review {
+  id            Int        @id @default(autoincrement())
+  first_name    String
+  last_name     String
+  text          String
+  rating        Float
+  restaurant_id Int
+  restaurant    Restaurant @relation(fields: [restaurant_id], references: [id])
+  user_id       Int
+  user          User       @relation(fields: [user_id], references: [id])
+  created_at    DateTime   @default(now())
+  updated_at    DateTime   @updatedAt
 }

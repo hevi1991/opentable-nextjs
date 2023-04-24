@@ -17,7 +17,7 @@ export default function SearchSideBar({
         <h1 className="mb-2">Region</h1>
         {locations.map((location) => (
           <Link
-            className="font-light text-reg capitalize"
+            className="text-reg capitalize"
             key={location.id}
             href={{
               pathname: "/search",
@@ -35,7 +35,7 @@ export default function SearchSideBar({
         <h1 className="mb-2">Cuisine</h1>
         {cuisines.map((cuisine) => (
           <Link
-            className="font-light text-reg capitalize"
+            className="text-reg capitalize"
             key={cuisine.id}
             href={{
               pathname: "/search",
@@ -53,7 +53,7 @@ export default function SearchSideBar({
         <h1 className="mb-2">Price</h1>
         <div className="flex">
           <Link
-            className="border w-full text-reg font-light rounded-l p-2"
+            className="border w-full text-reg rounded-l p-2"
             href={{
               pathname: "/search",
               query: {
@@ -65,7 +65,7 @@ export default function SearchSideBar({
             $
           </Link>
           <Link
-            className="border-r border-t border-b w-full text-reg font-light p-2"
+            className="border-r border-t border-b w-full text-reg p-2"
             href={{
               pathname: "/search",
               query: {
@@ -77,7 +77,7 @@ export default function SearchSideBar({
             $$
           </Link>
           <Link
-            className="border-r border-t border-b w-full text-reg font-light p-2 rounded-r"
+            className="border-r border-t border-b w-full text-reg p-2 rounded-r"
             href={{
               pathname: "/search",
               query: {
