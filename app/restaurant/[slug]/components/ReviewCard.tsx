@@ -2,7 +2,6 @@ import { Review } from "@prisma/client";
 import Stars from "../../../components/Stars";
 
 export default function ReviewCard({ review }: { review: Review }) {
-  console.log(review);
 
   return (
     <div className="border-b pb-7 mb-7">

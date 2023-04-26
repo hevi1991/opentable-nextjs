@@ -27,7 +27,7 @@ export default function RestaurantCard({
         href={`/restaurant/${slug}`}
         className="font-bold text-gray-700 text-2xl"
       >
-        <img src={main_image} alt="" className="w-full h-36" />
+        <img src={main_image} alt="" className="w-full h-36 object-cover" />
         <div className="p-1">
           <h3 className="font-bold text-2xl mb-2">{name}</h3>
           <div className="flex items-center">
