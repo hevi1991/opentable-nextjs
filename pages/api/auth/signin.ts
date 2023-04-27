@@ -44,6 +44,7 @@ export default async function handler(
     // compare user's password in db with form's
     // it will take 0 to the last index of $ and plus 22 charactors index as salt, then hash `password` to crypt.
     // For example
+    // password qQ11223123
     // crypted string: $2b$10$EdOAr5b/yxqedYE/Gez5cuOwI2Xky2EFS0gX4fuuli84Mh4kxxg.G
     // $2b$10$EdOAr5b/yxqedYE/Gez5cu is salt
     // using password and salt hash to get result
