@@ -63,7 +63,17 @@ export default async function handler(
       .setExpirationTime("24h")
       .sign(secret);
 
-    return res.status(200).json({ token });
+    return res
+      .status(200)
+      .setHeader("Set-Cookie", `jwt=${token};Max-Age=${24 * 60 * 60};Path=/`)
+      .json({
+        id: userWithEmail.id,
+        firstName: userWithEmail.first_name,
+        lastName: userWithEmail.last_name,
+        email: userWithEmail.email,
+        phone: userWithEmail.phone,
+        city: userWithEmail.city,
+      });
   }
   return res.status(404).send("Unknown endpoint");
 }
