@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import * as jose from "jose";
+import { setCookie } from "cookies-next";
 
 const prisma = new PrismaClient();
 
@@ -34,8 +35,8 @@ export default async function handler(
     }
 
     // get user in db with form email
-    const userWithEmail = await prisma.user.findUnique({ where: { email } });
-    if (!userWithEmail) {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
       return res
         .status(401)
         .json({ errorMessage: "Email or password is invalid" });
@@ -49,7 +50,7 @@ export default async function handler(
     // $2b$10$EdOAr5b/yxqedYE/Gez5cu is salt
     // using password and salt hash to get result
 
-    const isMatch = await bcrypt.compare(password, userWithEmail.password);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res
         .status(401)
@@ -58,22 +59,22 @@ export default async function handler(
 
     // make jwt
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    const token = await new jose.SignJWT({ email: userWithEmail.email })
+    const token = await new jose.SignJWT({ email: user.email })
       .setProtectedHeader({ alg: "HS256" })
       .setExpirationTime("24h")
       .sign(secret);
 
-    return res
-      .status(200)
-      .setHeader("Set-Cookie", `jwt=${token};Max-Age=${24 * 60 * 60};Path=/`)
-      .json({
-        id: userWithEmail.id,
-        firstName: userWithEmail.first_name,
-        lastName: userWithEmail.last_name,
-        email: userWithEmail.email,
-        phone: userWithEmail.phone,
-        city: userWithEmail.city,
-      });
+    // set cookie for jwt
+    setCookie("jwt", token, { req, res, maxAge: 60 * 60 * 24, path: "/" });
+
+    return res.status(200).json({
+      id: user.id,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      email: user.email,
+      phone: user.phone,
+      city: user.city,
+    });
   }
   return res.status(404).send("Unknown endpoint");
 }

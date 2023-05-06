@@ -1,11 +1,11 @@
 "use client";
+import { AuthenicationContext } from "@/context/AuthContext";
+import { Alert, AlertDescription, AlertTitle } from "@@/components/ui/alert";
+import { useAuth } from "hooks/useAuth";
+import { AlertCircle } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import SignModal from "./SignModal";
-import { useAuth } from "hooks/useAuth";
-import { AuthenicationContext } from "@/context/AuthContext";
 import LoadingIcon from "./icons/LoadingIcon";
-import { Alert, AlertDescription, AlertTitle } from "@@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
 
 interface InputsType {
   email: string;
@@ -41,10 +41,15 @@ export default function SignInModal() {
   const { signin } = useAuth();
 
   const handleClick = async () => {
-    await signin({ ...inputs });
+    try {
+      await signin({ ...inputs });
+      closeModal();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const { loading, error } = useContext(AuthenicationContext);
+  const { loading, error, data } = useContext(AuthenicationContext);
 
   return (
     <>
@@ -59,7 +64,7 @@ export default function SignInModal() {
       <SignModal title="Sign In" isOpen={isOpen} onClose={closeModal}>
         {loading ? (
           <div className="flex justify-center items-center h-96">
-            <LoadingIcon className={`mr-4 ${loading ? "animate-spin" : ""}`} />
+            <LoadingIcon className="mr-4" />
             Loading...
           </div>
         ) : (
@@ -89,6 +94,15 @@ export default function SignInModal() {
                 }}
               />
             </div>
+            <div className="mt-4">
+              <button
+                className="uppercase bg-red-500 w-full text-white p-3 rounded text-sm disabled:bg-gray-400 disabled:cursor-not-allowed"
+                disabled={disabled}
+                onClick={handleClick}
+              >
+                Sign In
+              </button>
+            </div>
             {error ? (
               <Alert className="mt-4" variant="destructive">
                 <AlertCircle className="h-4 w-4" />
@@ -96,15 +110,6 @@ export default function SignInModal() {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             ) : null}
-            <div className="mt-4">
-              <button
-                className="uppercase bg-red-500 w-full text-white p-3 rounded text-sm mb-5 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                disabled={disabled}
-                onClick={handleClick}
-              >
-                Sign In
-              </button>
-            </div>
           </>
         )}
       </SignModal>

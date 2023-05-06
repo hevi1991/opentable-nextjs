@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import * as jose from "jose";
+import { setCookie } from "cookies-next";
 
 const prisma = new PrismaClient();
 
@@ -44,14 +45,14 @@ export default async function handler(
       },
       {
         valid: validator.isStrongPassword(password, {
-          minLength: 8,
+          minLength: 6,
           minLowercase: 1,
           minUppercase: 1,
           minNumbers: 1,
           minSymbols: 0,
         }),
         errorMessage:
-          "Password is invalid, Currect format: minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1,",
+          "Password is invalid, Currect format: minLength: 6, minLowercase: 1, minUppercase: 1, minNumbers: 1,",
       },
     ];
 
@@ -99,7 +100,19 @@ export default async function handler(
       .setExpirationTime("24h")
       .sign(secret);
 
-    return res.status(200).json({ token });
+    // set cookie for jwt
+    setCookie("jwt", token, { req, res, maxAge: 60 * 60 * 24, path: "/" });
+
+    return res
+      .status(200)
+      .json({
+        id: user.id,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        email: user.email,
+        phone: user.phone,
+        city: user.city,
+      });
   }
 
   return res.status(404).send("Unknown endpoint");

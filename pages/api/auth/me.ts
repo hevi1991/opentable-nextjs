@@ -18,5 +18,18 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  return res.status(200).json(user);
+  if (!user) {
+    return res.status(401).json({
+      errorMessage: "Unauthorized",
+    });
+  }
+
+  return res.status(200).json({
+    id: user.id,
+    firstName: user.first_name,
+    lastName: user.last_name,
+    email: user.email,
+    phone: user.phone,
+    city: user.city,
+  });
 };

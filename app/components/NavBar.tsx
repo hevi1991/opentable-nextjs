@@ -5,9 +5,11 @@ import SignInModal from "./SignInModal";
 import SignUpModal from "./SignUpModal";
 import { useContext } from "react";
 import { AuthenicationContext } from "@/context/AuthContext";
+import { useAuth } from "@@/hooks/useAuth";
 
 export default function NavBar() {
   const { data, loading } = useContext(AuthenicationContext);
+  const { signout } = useAuth();
 
   return (
     <nav className="bg-white p-2 flex justify-between">
@@ -16,18 +18,16 @@ export default function NavBar() {
       </Link>
       <div>
         <div className="flex">
-          {/* {loading ? null : data ? (
-            <span>TODO: signout</span>
+          {loading ? null : data ? (
+            <button className="border p-1 px-4 rounded" onClick={signout}>
+              Sign out
+            </button>
           ) : (
             <>
               <SignInModal />
               <SignUpModal />
             </>
-          )} */}
-          <>
-            <SignInModal />
-            <SignUpModal />
-          </>
+          )}
         </div>
       </div>
     </nav>
