@@ -11,7 +11,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  // await prisma.table.deleteMany();
+  await prisma.bookingsOnTables.deleteMany();
+  await prisma.booking.deleteMany();
+  await prisma.table.deleteMany();
   await prisma.review.deleteMany();
   await prisma.item.deleteMany();
   await prisma.restaurant.deleteMany();
@@ -60,7 +62,7 @@ export default async function handler(
           "https://resizer.otstatic.com/v2/photos/xlarge/1/32484701.jpg",
           "https://resizer.otstatic.com/v2/photos/xlarge/1/32484708.jpg",
         ],
-        open_time: "14:30:00.000Z",
+        open_time: "13:30:00.000Z",
         close_time: "21:30:00.000Z",
         slug: "vivaan-fine-indian-cuisine-ottawa",
         location_id: ottawaLocationId,
@@ -1305,7 +1307,7 @@ export default async function handler(
     ],
   });
 
-  /* await prisma.table.createMany({
+  await prisma.table.createMany({
     data: [
       {
         restaurant_id: vivaanId,
@@ -1320,7 +1322,34 @@ export default async function handler(
         seats: 2,
       },
     ],
-  }) */
+  });
+
+  const insertedTable = await prisma.table.findFirst({
+    where: {
+      restaurant_id: vivaanId,
+    },
+  });
+
+  const insertedBooing = await prisma.booking.create({
+    data: {
+      number_of_people: 4,
+      booking_time: new Date("2023-05-09T14:00:00Z"),
+      booker_email: "a@ace.cc",
+      booker_phone: "1233",
+      booker_first_name: "john",
+      booker_last_name: "show",
+      booker_occasion: "nothing",
+      booker_request: "nothing",
+      restaurant_id: vivaanId,
+    },
+  });
+
+  await prisma.bookingsOnTables.create({
+    data: {
+      booking_id: insertedBooing.id,
+      table_id: insertedTable?.id!,
+    },
+  });
 
   res.status(200).json({ name: "hello" });
 }
