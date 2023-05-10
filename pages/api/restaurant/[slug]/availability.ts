@@ -20,13 +20,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
   }
 
-  // Step1DeterminingtheSearchTimes
+  // Step 1 DeterminingtheSearchTimes
   const searchTimes = times.find((t) => t.time === time)?.searchTimes;
   if (!searchTimes) {
     return res.status(400).json({ errorMessage: "Invalid data provided" });
   }
 
-  // Step2FetchingtheBookings
+  // Step 2 FetchingtheBookings
   const bookings = await prisma.booking.findMany({
     where: {
       booking_time: {
@@ -40,7 +40,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       tables: true,
     },
   });
-  // Step3CompressingtheBooking
+  // Step 3 CompressingtheBooking
   const bookingTablesObj: { [key: string]: { [key: string]: true } } = {};
   bookings.forEach((booking) => {
     bookingTablesObj[booking.booking_time.toISOString()] =
@@ -49,7 +49,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       }, {});
   });
 
-  // Step4FetchingtheRestaurantTables
+  // Step 4 FetchingtheRestaurantTables
   const restaurant = await prisma.restaurant.findUnique({
     where: { slug },
     select: {
@@ -63,7 +63,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
   const { tables } = restaurant;
 
-  // Step5ReformattingtheSearchTimes
+  // Step 5 ReformattingtheSearchTimes
   const searchTimesWithTables = searchTimes.map((searchTime) => {
     return {
       date: new Date(`${day}T${searchTime}`),
@@ -72,7 +72,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     };
   });
 
-  // Step6FilteringOuttheBookedTables
+  // Step 6 FilteringOuttheBookedTables
   searchTimesWithTables.forEach((t) => {
     t.tables = t.tables.filter((table) => {
       if (bookingTablesObj[t.date.toISOString()]) {
@@ -84,7 +84,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     });
   });
 
-  // Step7DeterminingtheAvailability
+  // Step 7 DeterminingtheAvailability
   const availablities = searchTimesWithTables
     .map((t) => {
       const sumSeats = t.tables.reduce((sum, table) => {
