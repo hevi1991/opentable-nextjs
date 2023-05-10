@@ -49,7 +49,7 @@ export default function SignInModal() {
     }
   };
 
-  const { loading, error, data } = useContext(AuthenicationContext);
+  const { signLoading, error, data } = useContext(AuthenicationContext);
 
   return (
     <>
@@ -62,7 +62,7 @@ export default function SignInModal() {
       </button>
 
       <SignModal title="Sign In" isOpen={isOpen} onClose={closeModal}>
-        {loading ? (
+        {signLoading ? (
           <div className="flex justify-center items-center h-96">
             <LoadingIcon className="mr-4" />
             Loading...

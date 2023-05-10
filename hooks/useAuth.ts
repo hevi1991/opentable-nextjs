@@ -8,9 +8,19 @@ export const useAuth = () => {
 
   const signin = async (data: { email: string; password: string }) => {
     try {
-      setAuthState({ loading: true, data: null, error: null });
+      setAuthState({
+        loading: false,
+        signLoading: true,
+        data: null,
+        error: null,
+      });
       const response = await axios.post("/api/auth/signin", data);
-      setAuthState({ loading: false, data: response.data, error: null });
+      setAuthState({
+        loading: false,
+        signLoading: false,
+        data: response.data,
+        error: null,
+      });
     } catch (error: any) {
       let errorMessage: string = "";
       if (error instanceof AxiosError) {
@@ -20,6 +30,7 @@ export const useAuth = () => {
       }
       setAuthState({
         loading: false,
+        signLoading: false,
         data: null,
         error: errorMessage,
       });
@@ -36,9 +47,19 @@ export const useAuth = () => {
     password: string;
   }) => {
     try {
-      setAuthState({ loading: true, data: null, error: null });
+      setAuthState({
+        loading: false,
+        signLoading: true,
+        data: null,
+        error: null,
+      });
       const response = await axios.post("/api/auth/signup", data);
-      setAuthState({ loading: false, data: response.data, error: null });
+      setAuthState({
+        loading: false,
+        signLoading: false,
+        data: response.data,
+        error: null,
+      });
     } catch (error) {
       let errorMessage: string = "";
       if (error instanceof AxiosError) {
@@ -48,6 +69,7 @@ export const useAuth = () => {
       }
       setAuthState({
         loading: false,
+        signLoading: false,
         data: null,
         error: errorMessage,
       });
@@ -57,7 +79,12 @@ export const useAuth = () => {
 
   const signout = async () => {
     deleteCookie("jwt");
-    setAuthState({ loading: false, data: null, error: null });
+    setAuthState({
+      loading: false,
+      signLoading: false,
+      data: null,
+      error: null,
+    });
   };
 
   return {

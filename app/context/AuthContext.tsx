@@ -15,6 +15,7 @@ interface User {
 
 interface State {
   loading: boolean;
+  signLoading: boolean;
   data: User | null;
   error: string | null;
 }
@@ -25,6 +26,7 @@ interface AuthState extends State {
 
 export const AuthenicationContext = createContext<AuthState>({
   loading: false,
+  signLoading: false,
   data: null,
   error: null,
   setAuthState: () => {},
@@ -38,17 +40,28 @@ export default function AuthContext({
   // default values
   const [authState, setAuthState] = useState<State>({
     loading: true,
+    signLoading: false,
     data: null,
     error: null,
   });
 
   const fetchMe = async () => {
     try {
-      setAuthState({ loading: true, data: null, error: null });
+      setAuthState({
+        loading: true,
+        signLoading: false,
+        data: null,
+        error: null,
+      });
       const token = getCookie("jwt");
       axios.defaults.headers.common.Authorization = `Bearer ${token}`;
       const response = await axios.get("/api/auth/me");
-      setAuthState({ loading: false, data: response.data, error: null });
+      setAuthState({
+        loading: false,
+        signLoading: false,
+        data: response.data,
+        error: null,
+      });
     } catch (error) {
       let errorMessage: string = "";
       if (error instanceof AxiosError) {
@@ -58,6 +71,7 @@ export default function AuthContext({
       }
       setAuthState({
         loading: false,
+        signLoading: false,
         data: null,
         error: errorMessage,
       });
@@ -72,6 +86,7 @@ export default function AuthContext({
     } else {
       setAuthState({
         loading: false,
+        signLoading: false,
         data: null,
         error: null,
       });

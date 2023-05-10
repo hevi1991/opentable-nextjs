@@ -61,8 +61,8 @@ export default function SignUpModal() {
       console.error(error);
     }
   };
-  
-  const { loading, error } = useContext(AuthenicationContext);
+
+  const { signLoading, error } = useContext(AuthenicationContext);
 
   return (
     <>
@@ -75,7 +75,7 @@ export default function SignUpModal() {
       </button>
 
       <SignModal title="Create Account" isOpen={isOpen} onClose={closeModal}>
-        {loading ? (
+        {signLoading ? (
           <div className="flex justify-center items-center h-96">
             <LoadingIcon className="mr-4" />
             Loading...
