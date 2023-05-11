@@ -1,8 +1,11 @@
 "use client";
 import { DatePicker } from "@@/app/components/DatePicker";
+import LoadingIcon from "@@/app/components/icons/LoadingIcon";
 import { partySize as partySizes, times } from "@@/data";
 import useAvailabilities from "@@/hooks/useAvailabilities";
-import { isWithinInterval, parse } from "date-fns";
+import { convertToDisplayTime } from "@@/utils/convertToDisplayTime";
+import { isWithinInterval, parse, parseISO } from "date-fns";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function ReservationCard({
@@ -34,8 +37,8 @@ export default function ReservationCard({
 
   // fetch available tables
   const { data, loading, error, fetchAvailabilites } = useAvailabilities();
-  const handleClick = () => {
-    fetchAvailabilites({
+  const handleClick = async () => {
+    await fetchAvailabilites({
       slug,
       day,
       time: time,
@@ -43,11 +46,12 @@ export default function ReservationCard({
     });
   };
 
+  // TODO: rendering avail.... time options
+
   return (
     <div className="fixed w-[15%] bg-white rounded p-3 shadow">
       <div className="text-center border-b pb-2 font-bold">
         <h4 className="mr-7 text-lg">Make a Reservation</h4>
-        {day}
       </div>
       <div className="my-3 flex flex-col">
         <label htmlFor="">Party size</label>
@@ -87,12 +91,36 @@ export default function ReservationCard({
       </div>
       <div className="mt-5">
         <button
-          className="bg-red-600 rounded w-full px-4 text-white font-bold h-16"
-          onChange={handleClick}
+          className="bg-red-600 rounded w-full px-4 text-white font-bold h-16 text-center"
+          onClick={handleClick}
+          disabled={loading}
         >
-          Find a Time
+          {loading ? <LoadingIcon /> : "Find a Time"}
         </button>
       </div>
+      {data && data.length ? (
+        <div className="mt-4">
+          <p className="text-reg">Select a Time</p>
+          <div className="flex flex-wrap mt-2">
+            {data.map((time) => {
+              return time.available ? (
+                <Link
+                  href={`/reserve/${slug}?date=${day}T${time.time}&partySize=${partySize}`}
+                  className=" bg-red-600 cursor-pointer p-2 w-24 text-center text-white mb-3 rounded mr-3"
+                >
+                  <p className="text-sm font-bold">
+                    {convertToDisplayTime(time.time)}
+                  </p>
+                </Link>
+              ) : (
+                <p className="bg-gray-300 p-2 w-24 mb-3 rounded mr-3 text-center text-sm font-bold">
+                  {convertToDisplayTime(time.time)}
+                </p>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
