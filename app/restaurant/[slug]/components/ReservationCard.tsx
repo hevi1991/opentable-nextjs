@@ -46,8 +46,6 @@ export default function ReservationCard({
     });
   };
 
-  // TODO: rendering avail.... time options
-
   return (
     <div className="fixed w-[15%] bg-white rounded p-3 shadow">
       <div className="text-center border-b pb-2 font-bold">
@@ -107,13 +105,17 @@ export default function ReservationCard({
                 <Link
                   href={`/reserve/${slug}?date=${day}T${time.time}&partySize=${partySize}`}
                   className=" bg-red-600 cursor-pointer p-2 w-24 text-center text-white mb-3 rounded mr-3"
+                  key={time.time}
                 >
                   <p className="text-sm font-bold">
                     {convertToDisplayTime(time.time)}
                   </p>
                 </Link>
               ) : (
-                <p className="bg-gray-300 p-2 w-24 mb-3 rounded mr-3 text-center text-sm font-bold">
+                <p
+                  className="bg-gray-300 p-2 w-24 mb-3 rounded mr-3 text-center text-sm font-bold"
+                  key={time.time}
+                >
                   {convertToDisplayTime(time.time)}
                 </p>
               );

@@ -1,8 +1,15 @@
+import { PrismaClient } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from "next";
 import validator from "validator";
 import { findAvailableTables } from "@@/services/restaurant/findAvailableTables";
 
+const prisma = new PrismaClient();
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
+  if (req.method !== "GET") {
+    return res.status(405).json({ errorMessage: "no allowed method" });
+  }
+
   const { slug, day, time, partySize } = req.query as {
     slug: string;
     day: string;
@@ -17,11 +24,22 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   try {
+    const restaurant = await prisma.restaurant.findUnique({
+      where: { slug },
+      select: {
+        id: true,
+        tables: true,
+        open_time: true,
+        close_time: true,
+      },
+    });
+    if (!restaurant) {
+      return res.status(400).json({ errorMessage: "Invalid data provided" });
+    }
     const availablities = await findAvailableTables({
-      slug,
+      restaurant,
       day,
       time,
-      partySize,
     });
     const result = availablities.map((t) => {
       const sumSeats = t.tables.reduce((sum, table) => {

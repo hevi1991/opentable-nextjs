@@ -5,15 +5,18 @@ import { isWithinInterval } from "date-fns";
 const prisma = new PrismaClient();
 
 export const findAvailableTables = async ({
-  slug,
+  restaurant,
   day,
   time,
-  partySize,
 }: {
-  slug: string;
+  restaurant: {
+    id: number;
+    tables: Table[];
+    open_time: string;
+    close_time: string;
+  };
   day: string;
   time: string;
-  partySize: string;
 }): Promise<
   {
     date: Date;
@@ -28,13 +31,13 @@ export const findAvailableTables = async ({
   }
 
   // Step 2 FetchingtheBookings
-  // TODO: check if other restaurant booked
   const bookings = await prisma.booking.findMany({
     where: {
       booking_time: {
         gte: new Date(`${day}T${searchTimes[0]}`),
         lte: new Date(`${day}T${searchTimes[searchTimes.length - 1]}`),
       },
+      restaurant_id: restaurant.id,
     },
     select: {
       number_of_people: true,
@@ -43,26 +46,22 @@ export const findAvailableTables = async ({
     },
   });
   // Step 3 CompressingtheBooking
-  const bookingTablesObj: { [key: string]: { [key: string]: true } } = {};
+  const bookingTablesObj: {
+    [bookingDate: string]: { [tableId: string]: true };
+  } = {};
   bookings.forEach((booking) => {
-    bookingTablesObj[booking.booking_time.toISOString()] =
+    if (!bookingTablesObj[booking.booking_time.toISOString()]) {
+      bookingTablesObj[booking.booking_time.toISOString()] = {};
+    }
+    bookingTablesObj[booking.booking_time.toISOString()] = Object.assign(
+      bookingTablesObj[booking.booking_time.toISOString()],
       booking.tables.reduce((obj, table) => {
         return { ...obj, [table.table_id]: true };
-      }, {});
+      }, {})
+    );
   });
 
   // Step 4 FetchingtheRestaurantTables
-  const restaurant = await prisma.restaurant.findUnique({
-    where: { slug },
-    select: {
-      tables: true,
-      open_time: true,
-      close_time: true,
-    },
-  });
-  if (!restaurant) {
-    throw new Error("Invalid data provided");
-  }
   const { tables } = restaurant;
 
   // Step 5 ReformattingtheSearchTimes
